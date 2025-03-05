@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudFormation CI CD Stack for interactive
+
+Parameters:
+  ResourcePrefix:
+    Description: Resource prefix that will be used for all resource names (e.g. emsp-vpc)
+    Type: String
+    MinLength: "3"
+    MaxLength: "12"
+    AllowedPattern: "[a-z]+"
+    Default: "emspuk"
+  EnvironmentName:
+    Description: Environment name that will be used for resource names
+    Type: String
+    AllowedValues:
+      - dev
+      - sqa
+      - uat
+      - prod
+      - staging
+      - infra
+      - qa
+    MinLength: "2"
+    MaxLength: "7"
+    AllowedPattern: "[a-z]+"
+
+Resources:
+
+  CloudFormationPackageS3Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      BucketName: !Sub "${ResourcePrefix}-${EnvironmentName}-cloudformation-scripts"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  CodeBuildRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - "sts:AssumeRole"
+            Principal:
+              Service:
+                - "codebuild.amazonaws.com"
+            Effect: Allow
+        Version: 2012-10-17
+      Description: Grant AWS services access to Code Build
+      Path: /
+      Policies:
+        - PolicyName: !Sub ${ResourcePrefix}-${EnvironmentName}-code-build-admin-access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Action: "*"
+                Effect: Allow
+                Resource: "*"
+      RoleName: !Sub "${ResourcePrefix}-${EnvironmentName}-code-build-role"
+
+  InfrastructureCodeBuild:
+    Type: "AWS::CodeBuild::Project"
+    Properties:
+      Description: Infrastructure CloudFormation Build & Packaging
+      # Update according to gitHub support
+      # SourceVersion: !Ref BitbucketBranch
+      # Source:
+      #   BuildSpec: buildspec/config.yml
+      #   Auth:
+      #     Type: CODECONNECTIONS
+      #     Resource: !Ref CodeStarConnectionArn
+      #   Location: !Sub https://bitbucket.org/instavolt-ev-platform/infrastructure.git
+      #   ReportBuildStatus: true
+      #   Type: BITBUCKET
+      Name: !Sub ${ResourcePrefix}-${EnvironmentName}-infrastructure
+      Artifacts:
+        Type: NO_ARTIFACTS
+      ServiceRole: !Ref CodeBuildRole
+      QueuedTimeoutInMinutes: 30
+      LogsConfig:
+        CloudWatchLogs:
+          GroupName: !Ref LogsInfrastructureCodeBuild
+          Status: "ENABLED"
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux-x86_64-standard:5.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: EnvironmentName
+            Type: PLAINTEXT
+            Value: !Ref EnvironmentName
+          - Name: ResourcePrefix
+            Type: PLAINTEXT
+            Value: !Ref ResourcePrefix
+          - Name: S3_Bucket
+            Type: PLAINTEXT
+            Value: !Ref CloudFormationPackageS3Bucket
+      TimeoutInMinutes: 15
+
+  LogsInfrastructureCodeBuild:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      RetentionInDays: 365
+      LogGroupName: !Sub "code-build-${ResourcePrefix}-${EnvironmentName}-infrastructure"
