@@ -195,7 +195,6 @@ Resources:
 
   InteractiveCluster:
     Type: 'AWS::CloudFormation::Stack'
-    DependsOn: IAM
     Properties:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
