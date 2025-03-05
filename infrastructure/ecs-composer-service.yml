@@ -14,8 +14,6 @@ Parameters:
     Type: String
   Region:
     Type: String 
-  TGName:
-    Type: String
   ClusterName:
     Description: Cluster Name
     Type: String
@@ -84,7 +82,7 @@ Resources:
             - !Sub '{{resolve:ssm:/${ResourcePrefix}/${EnvironmentName}/ECSTasks/b}}'
       TaskDefinition: !Ref TaskDefinition
       LoadBalancers:
-        - TargetGroupArn: !Sub '{{resolve:ssm:/${ResourcePrefix}/${EnvironmentName}/${TGName}-tg/arn}}'
+        - TargetGroupArn: !Sub '{{resolve:ssm:/${ResourcePrefix}/${EnvironmentName}-tg/arn}}'
           ContainerName: !Ref ContainerName
           ContainerPort: '8000'
 

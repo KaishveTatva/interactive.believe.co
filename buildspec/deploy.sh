@@ -16,13 +16,8 @@ aws cloudformation deploy \
     --parameter-overrides \
         EnvironmentName=${EnvironmentName} \
         ResourcePrefix=${ResourcePrefix} \
-        VPCCidr=${VPCCidr} \
-        PrivateSubnetCIDRA=${PrivateSubnetCIDRA} \
-        PrivateSubnetCIDRB=${PrivateSubnetCIDRB} \
+        CidrPrefix=${CidrPrefix} \
         ComposerName=${ComposerName} \
         ProviderName=${ProviderName} \
         InteractiveClusterName=${InteractiveClusterName} \
-        TargetGroupName=${TargetGroupName} \
-        LoadBalancerName=${LoadBalancerName} \
-        VpcOriginName=${VpcOriginName} \
     --no-fail-on-empty-changeset

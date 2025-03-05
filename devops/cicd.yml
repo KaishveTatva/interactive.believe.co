@@ -3,26 +3,27 @@ Description: CloudFormation CI CD Stack for interactive
 
 Parameters:
   ResourcePrefix:
-    Description: Resource prefix that will be used for all resource names (e.g. emsp-vpc)
+    Description: Resource prefix that will be used for all resource names
     Type: String
     MinLength: "3"
     MaxLength: "12"
     AllowedPattern: "[a-z]+"
-    Default: "emspuk"
+    Default: "interactive"
   EnvironmentName:
     Description: Environment name that will be used for resource names
     Type: String
-    AllowedValues:
-      - dev
-      - sqa
-      - uat
-      - prod
-      - staging
-      - infra
-      - qa
-    MinLength: "2"
-    MaxLength: "7"
     AllowedPattern: "[a-z]+"
+  CidrPrefix:
+    Description: IPv4 CIDR block prefix (e.g. 10.10, 172.16 etc...)
+    Type: String
+    Default: 172.16
+  ComposerName:
+    Type: String
+  ProviderName:
+    Type: String
+  InteractiveClusterName:
+    Type: String
+
 
 Resources:
 
@@ -68,16 +69,15 @@ Resources:
     Type: "AWS::CodeBuild::Project"
     Properties:
       Description: Infrastructure CloudFormation Build & Packaging
-      # Update according to gitHub support
-      # SourceVersion: !Ref BitbucketBranch
-      # Source:
-      #   BuildSpec: buildspec/config.yml
-      #   Auth:
-      #     Type: CODECONNECTIONS
-      #     Resource: !Ref CodeStarConnectionArn
-      #   Location: !Sub https://bitbucket.org/instavolt-ev-platform/infrastructure.git
-      #   ReportBuildStatus: true
-      #   Type: BITBUCKET
+      SourceVersion: !Ref GitHubBranch
+      Source:
+        BuildSpec: buildspec/config.yml
+        Auth:
+          Type: CODECONNECTIONS
+          Resource: !Ref CodeStarConnectionArn
+        Location: !Sub https://github.com/KaishveTatva/interactive.believe.co.git
+        ReportBuildStatus: true
+        Type: GITHUB
       Name: !Sub ${ResourcePrefix}-${EnvironmentName}-infrastructure
       Artifacts:
         Type: NO_ARTIFACTS
@@ -101,6 +101,19 @@ Resources:
           - Name: S3_Bucket
             Type: PLAINTEXT
             Value: !Ref CloudFormationPackageS3Bucket
+          - Name: CidrPrefix
+            Type: PLAINTEXT
+            Value: !Ref CidrPrefix
+          - Name: ComposerName
+            Type: PLAINTEXT
+            Value: !Ref ComposerName
+          - Name: ProviderName
+            Type: PLAINTEXT
+            Value: !Ref ProviderName
+          - Name: InteractiveClusterName
+            Type: PLAINTEXT
+            Value: !Ref InteractiveClusterName
+          
       TimeoutInMinutes: 15
 
   LogsInfrastructureCodeBuild:

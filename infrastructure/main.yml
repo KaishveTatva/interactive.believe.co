@@ -11,27 +11,18 @@ Parameters:
     Type: String
     MinLength: '2'
     MaxLength: '20'
-  VPCCidr:
-    Description: VPC CIDR for interactive
+  CidrPrefix:
+    Description: IPv4 CIDR block prefix (e.g. 10.10, 172.16 etc...)
     Type: String
-  PrivateSubnetCIDRA:
-    Description: CIDR for Private Subnet in AZ-A (will be used for RDS and lambda resources)
-    Type: String
-  PrivateSubnetCIDRB:
-    Description: CIDR for Private Subnet in AZ-B (will be used for RDS and lambda resources)
-    Type: String
+    Default: 172.16
   ComposerName:
     Type: String
   ProviderName:
     Type: String
   InteractiveClusterName:
     Type: String
-  TargetGroupName:
-    Type: String
-  LoadBalancerName:
-    Type: String
-  VpcOriginName:
-    Type: String
+
+
 
 Resources:
   StaticContentBucket:
@@ -63,7 +54,7 @@ Resources:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
         EnvironmentName: !Ref EnvironmentName
-        CidrBlock: !Ref VPCCidr
+        CidrBlock: !Sub "${CidrPrefix}.0.0/20"
       TemplateURL: ./vpc.yml
       TimeoutInMinutes: '5'
        
@@ -76,7 +67,7 @@ Resources:
         EnvironmentName: !Ref EnvironmentName
         VpcId: !GetAtt VPC.Outputs.VpcId
         AvailabilityZone: 'a'
-        PrivateSubnetCIDR: !Ref PrivateSubnetCIDRA
+        PrivateSubnetCIDR: !Sub "${CidrPrefix}.4.0/24"
       TemplateURL: ./subnet.yml
       TimeoutInMinutes: 15
 
@@ -89,7 +80,7 @@ Resources:
         EnvironmentName: !Ref EnvironmentName
         VpcId: !GetAtt VPC.Outputs.VpcId
         AvailabilityZone: 'b'
-        PrivateSubnetCIDR: !Ref PrivateSubnetCIDRB
+        PrivateSubnetCIDR: !Sub "${CidrPrefix}.4.0/24"
       TemplateURL: ./subnet.yml
       TimeoutInMinutes: 15
   
@@ -129,7 +120,6 @@ Resources:
         ResourcePrefix: !Ref ResourcePrefix
         EnvironmentName: !Ref EnvironmentName
         VpcId: !GetAtt VPC.Outputs.VpcId
-        TGName: !Ref TargetGroupName
       TemplateURL: ./target-group.yml
       TimeoutInMinutes: 15
 
@@ -140,7 +130,6 @@ Resources:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
         EnvironmentName: !Ref EnvironmentName
-        LoadBalancerName: !Ref LoadBalancerName
         TargetGroupArn: !GetAtt TargetGroup.Outputs.TargetGroupArn
         VpcId: !GetAtt VPC.Outputs.VpcId
         SubnetIds:
@@ -161,8 +150,6 @@ Resources:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
         EnvironmentName: !Ref EnvironmentName
-        LoadBalancerName: !Ref LoadBalancerName
-        VpcOriginName: !Ref VpcOriginName
       TemplateURL: ./vpc-origin.yml 
       TimeoutInMinutes: 30
 
@@ -219,7 +206,6 @@ Resources:
         EnvironmentName: !Ref EnvironmentName
         ResourcePrefix: !Ref ResourcePrefix
         ContainerName: !Ref ComposerName
-        TGName : !Ref TargetGroupName
         ECRRepoName: !GetAtt ComposerECRRepository.Outputs.RepositoryName
   
   ProviderEcsServiceStack:

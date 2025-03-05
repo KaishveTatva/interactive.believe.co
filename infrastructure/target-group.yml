@@ -8,9 +8,6 @@ Parameters:
   EnvironmentName:
     Description: An environment name that will be used for resource names
     Type: String
-  TGName:
-    Description: Target Group name
-    Type: String   
   VpcId:
     Description: Vpc Id
     Type: AWS::EC2::VPC::Id
@@ -21,7 +18,7 @@ Resources:
     Properties:
       HealthCheckProtocol: HTTP
       IpAddressType: ipv4
-      Name: !Sub ${ResourcePrefix}-${EnvironmentName}-${TGName}-tg
+      Name: !Sub ${ResourcePrefix}-${EnvironmentName}-tg
       Protocol: HTTP
       # HealthCheckMatcher:
       #   HttpCode: "200-499"
@@ -33,17 +30,17 @@ Resources:
       VpcId: !Ref VpcId
       Tags:
         - Key: Name
-          Value: !Sub ${ResourcePrefix}-${EnvironmentName}-${TGName}-tg       
+          Value: !Sub ${ResourcePrefix}-${EnvironmentName}-tg       
 
   SSMForTargetGroupName:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
       Description: !Sub 'Target Group Name'
-      Value: !Sub ${ResourcePrefix}-${EnvironmentName}-${TGName}-tg
-      Name: !Sub '/${ResourcePrefix}/${EnvironmentName}/${TGName}-tg/name'
+      Value: !Sub ${ResourcePrefix}-${EnvironmentName}-tg
+      Name: !Sub '/${ResourcePrefix}/${EnvironmentName}-tg/name'
       Tags:
-        Name: !Sub /${ResourcePrefix}/${EnvironmentName}/${TGName}-tg/name
+        Name: !Sub /${ResourcePrefix}/${EnvironmentName}-tg/name
 
   SSMForTargetGroupArn:
     Type: AWS::SSM::Parameter
@@ -51,9 +48,9 @@ Resources:
       Type: String
       Description: !Sub 'Target Group ARN'
       Value: !Ref TargetGroup
-      Name: !Sub '/${ResourcePrefix}/${EnvironmentName}/${TGName}-tg/arn'
+      Name: !Sub '/${ResourcePrefix}/${EnvironmentName}-tg/arn'
       Tags:
-        Name: !Sub /${ResourcePrefix}/${EnvironmentName}/${TGName}-tg/arn
+        Name: !Sub /${ResourcePrefix}/${EnvironmentName}-tg/arn
 
 Outputs:
   TargetGroupArn:

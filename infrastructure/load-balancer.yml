@@ -7,9 +7,6 @@ Parameters:
   EnvironmentName:
     Description: An environment name that will be used for resource names
     Type: String
-  LoadBalancerName:
-    Description: Load Balancer Name
-    Type: String  
   TargetGroupArn:
     Type: String       
   VpcId:
@@ -36,7 +33,7 @@ Resources:
   InternalALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: !Sub ${ResourcePrefix}-${EnvironmentName}-${LoadBalancerName}-lb
+      Name: !Sub ${ResourcePrefix}-${EnvironmentName}-lb
       Scheme: internal
       Type: application
       Subnets: !Ref SubnetIds
@@ -58,10 +55,10 @@ Resources:
     Properties:
       Type: String
       Description: !Sub  'Load Balancer Name'
-      Value: !Sub ${ResourcePrefix}-${EnvironmentName}-${LoadBalancerName}-lb
-      Name: !Sub '/${ResourcePrefix}/${EnvironmentName}/${LoadBalancerName}-lb/name'
+      Value: !Sub ${ResourcePrefix}-${EnvironmentName}-lb
+      Name: !Sub '/${ResourcePrefix}/${EnvironmentName}-lb/name'
       Tags:
-        Name: !Sub /${ResourcePrefix}/${EnvironmentName}/${LoadBalancerName}-lb/name
+        Name: !Sub /${ResourcePrefix}/${EnvironmentName}-lb/name
 
   SSMForLoadBalancerArn:
     Type: 'AWS::SSM::Parameter'
@@ -69,9 +66,9 @@ Resources:
       Type: String
       Description: !Sub 'Load Balancer ARN'
       Value: !Ref InternalALB
-      Name: !Sub '/${ResourcePrefix}/${EnvironmentName}/${LoadBalancerName}-lb/arn'
+      Name: !Sub '/${ResourcePrefix}/${EnvironmentName}-lb/arn'
       Tags:
-        Name: !Sub /${ResourcePrefix}/${EnvironmentName}/${LoadBalancerName}-lb/arn
+        Name: !Sub /${ResourcePrefix}/${EnvironmentName}-lb/arn
 
 Outputs:
   ALBEndpoint:

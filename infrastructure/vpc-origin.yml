@@ -7,13 +7,7 @@ Parameters:
     Type: String
   EnvironmentName:
     Description: An environment name that will be used for resource names
-    Type: String
-  VpcOriginName:
-    Description: Vpc Origin name
-    Type: String     
-  LoadBalancerName:
-    Description: Load Balancer name
-    Type: String  
+    Type: String 
 
 Resources:
   VpcOrigin: 
@@ -21,23 +15,23 @@ Resources:
     Properties:
       Tags: 
         - Key: Name
-          Value: !Sub ${ResourcePrefix}-${EnvironmentName}-${VpcOriginName}-vo       
+          Value: !Sub ${ResourcePrefix}-${EnvironmentName}-vo       
       VpcOriginEndpointConfig: 
-          Arn: !Sub "{{resolve:ssm:/${ResourcePrefix}/${EnvironmentName}/${LoadBalancerName}-lb/arn}}"          
+          Arn: !Sub "{{resolve:ssm:/${ResourcePrefix}/${EnvironmentName}-lb/arn}}"          
           HTTPPort: 80
-          Name: !Sub ${ResourcePrefix}-${EnvironmentName}-${VpcOriginName}-vo
+          Name: !Sub ${ResourcePrefix}-${EnvironmentName}-vo
 
   SSMForVpcOriginName:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Sub "/${ResourcePrefix}/${EnvironmentName}/${VpcOriginName}-vo/name"
+      Name: !Sub "/${ResourcePrefix}/${EnvironmentName}-vo/name"
       Type: String
-      Value: !Sub "${ResourcePrefix}-${EnvironmentName}-${VpcOriginName}-vo"
+      Value: !Sub "${ResourcePrefix}-${EnvironmentName}-vo"
 
   SSMForVpcOriginArn:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Sub "/${ResourcePrefix}/${EnvironmentName}/${VpcOriginName}-vo/arn"
+      Name: !Sub "/${ResourcePrefix}/${EnvironmentName}-vo/arn"
       Type: String
       Value: !Ref VpcOrigin # need to check, and apply correct value 
 
