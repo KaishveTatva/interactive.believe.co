@@ -38,45 +38,46 @@ Resources:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
 
-  VPCFlowLogGroup:
-    Type: 'AWS::Logs::LogGroup'
-    Properties:
-      LogGroupName: !Sub "${ResourcePrefix}-${EnvironmentName}-vpc-flow-LogGroup"
-      RetentionInDays: 365
-      Tags:
-        - Key: Name
-          Value: !Sub ${ResourcePrefix}-${EnvironmentName}-vpc-flow-LogGroup
+  # VPCFlowLogGroup:
+  #   Type: 'AWS::Logs::LogGroup'
+  #   Properties:
+  #     LogGroupName: !Sub "${ResourcePrefix}-${EnvironmentName}-vpc-flow-LogGroup"
+  #     RetentionInDays: 365
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub ${ResourcePrefix}-${EnvironmentName}-vpc-flow-LogGroup
 
-  VPCFlowLogRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      RoleName: !Sub ${ResourcePrefix}-${EnvironmentName}-vpc-flow-log-role
-      Path: "/"
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: 'vpc-flow-logs.amazonaws.com'
-          Action: 'sts:AssumeRole'
-      ManagedPolicyArns:
-        - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-      Tags:
-        - Key: Name
-          Value: !Sub ${ResourcePrefix}-${EnvironmentName}-vpc-flow-log-role
+  # VPCFlowLogRole:
+  #   Type: 'AWS::IAM::Role'
+  #   Properties:
+  #     RoleName: !Sub ${ResourcePrefix}-${EnvironmentName}-vpc-flow-log-role
+  #     Path: "/"
+  #     AssumeRolePolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #       - Effect: Allow
+  #         Principal:
+  #           Service: 'vpc-flow-logs.amazonaws.com'
+  #         Action: 'sts:AssumeRole'
+  #     ManagedPolicyArns:
+  #       - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub ${ResourcePrefix}-${EnvironmentName}-vpc-flow-log-role
 
 
-  VPCFlowLog:
-    Type: 'AWS::EC2::FlowLog'
-    Properties:
-      DeliverLogsPermissionArn: !GetAtt 'VPCFlowLogRole.Arn'
-      LogGroupName: !Ref VPCFlowLogGroup
-      ResourceId: !Ref VPC
-      ResourceType: 'VPC'
-      TrafficType: 'REJECT'
-      Tags:
-        - Key: Name
-          Value: !Sub ${ResourcePrefix}-${EnvironmentName}-vpc-flow-log
+  # VPCFlowLog:
+  #   Type: 'AWS::EC2::FlowLog'
+  #   Properties:
+  #     DeliverLogsPermissionArn: !GetAtt 'VPCFlowLogRole.Arn'
+  #     LogGroupName: !Ref VPCFlowLogGroup
+  #     ResourceId: !Ref VPC
+  #     ResourceType: 'VPC'
+  #     TrafficType: 'REJECT'
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub ${ResourcePrefix}-${EnvironmentName}-vpc-flow-log
+  
   SSMforECSClusterVPCId:
     Type: 'AWS::SSM::Parameter'
     Properties:
