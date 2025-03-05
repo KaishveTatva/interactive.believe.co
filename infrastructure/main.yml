@@ -69,6 +69,7 @@ Resources:
        
   SubnetA:
     Type: AWS::CloudFormation::Stack
+    DependsOn: VPC
     Properties:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
@@ -81,6 +82,7 @@ Resources:
 
   SubnetB:
     Type: AWS::CloudFormation::Stack
+    DependsOn: VPC
     Properties:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
@@ -133,6 +135,7 @@ Resources:
 
   LoadBalancer:
     Type: AWS::CloudFormation::Stack
+    DependsOn: TargetGroup
     Properties:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
@@ -153,6 +156,7 @@ Resources:
 
   VpcOrigin:
     Type: AWS::CloudFormation::Stack
+    DependsOn: LoadBalancer
     Properties:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
@@ -164,6 +168,7 @@ Resources:
 
   CloudfrontBackend:
     Type: AWS::CloudFormation::Stack
+    DependsOn: VpcOrigin
     Properties:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
@@ -195,6 +200,7 @@ Resources:
 
   InteractiveCluster:
     Type: 'AWS::CloudFormation::Stack'
+    DependsOn: LoadBalancer
     Properties:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
@@ -205,6 +211,7 @@ Resources:
    
   ComposerEcsServiceStack:
     Type: AWS::CloudFormation::Stack
+    DependsOn: InteractiveCluster
     Properties:
       TemplateURL: ./ecs-composer-service.yml
       TimeoutInMinutes: 30
@@ -217,6 +224,7 @@ Resources:
   
   ProviderEcsServiceStack:
     Type: AWS::CloudFormation::Stack
+    DependsOn: InteractiveCluster
     Properties:
       TemplateURL: ./ecs-provider-service.yml
       TimeoutInMinutes: 30
