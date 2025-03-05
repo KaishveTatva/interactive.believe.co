@@ -69,15 +69,12 @@ Resources:
     Type: "AWS::CodeBuild::Project"
     Properties:
       Description: Infrastructure CloudFormation Build & Packaging
-      SourceVersion: !Ref GitHubBranch
       Source:
         BuildSpec: buildspec/config.yml
-        Auth:
-          Type: CODECONNECTIONS
-          Resource: !Ref CodeStarConnectionArn
         Location: !Sub https://github.com/KaishveTatva/interactive.believe.co.git
         ReportBuildStatus: true
         Type: GITHUB
+
       Name: !Sub ${ResourcePrefix}-${EnvironmentName}-infrastructure
       Artifacts:
         Type: NO_ARTIFACTS

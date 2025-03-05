@@ -80,7 +80,7 @@ Resources:
         EnvironmentName: !Ref EnvironmentName
         VpcId: !GetAtt VPC.Outputs.VpcId
         AvailabilityZone: 'b'
-        PrivateSubnetCIDR: !Sub "${CidrPrefix}.4.0/24"
+        PrivateSubnetCIDR: !Sub "${CidrPrefix}.12.0/24"
       TemplateURL: ./subnet.yml
       TimeoutInMinutes: 15
   
