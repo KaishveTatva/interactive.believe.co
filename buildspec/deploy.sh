@@ -4,7 +4,7 @@ set -e
 cd ./infrastructure
 # Package CloudFormation template
 aws cloudformation package \
-    --template-file main.yml \
+    --template-file ../infrastructure/main.yml \
     --s3-bucket ${S3_Bucket} \
     --output-template-file main.template
 
