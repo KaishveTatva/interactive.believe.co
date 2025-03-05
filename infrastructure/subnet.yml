@@ -15,7 +15,7 @@ Parameters:
   AvailabilityZone:
     Description: Subnet - Availability Zone
     Type: String
-  PrivateCidrBlock:
+  PrivateSubnetCIDR:
     Description: Private Subnet - Cidr Block
     Type: String
 
@@ -27,7 +27,7 @@ Resources:
     Properties:
       AvailabilityZone: !Sub "${AWS::Region}${AvailabilityZone}"
       VpcId: !Ref VpcId
-      CidrBlock: !Ref PrivateCidrBlock
+      CidrBlock: !Ref PrivateSubnetCIDR
       Tags:
         - Key: Name
           Value: !Sub ${ResourcePrefix}-${EnvironmentName}-private-subnet-${AvailabilityZone}
