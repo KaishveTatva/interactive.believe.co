@@ -12,7 +12,7 @@ aws cloudformation package \
 aws cloudformation deploy \
     --template-file main.template \
     --stack-name "$ResourcePrefix-$EnvironmentName-infra-stack" \
-    --capabilities CAPABILITY_IAM \
+    --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
     --parameter-overrides \
         EnvironmentName=${EnvironmentName} \
         ResourcePrefix=${ResourcePrefix} \
