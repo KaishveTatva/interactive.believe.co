@@ -124,7 +124,7 @@ Resources:
   AddSGOutboundToALB:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
-      Description: add outbound to ALB's SG
+      Description: "add outbound to ALB's SG"
       DestinationSecurityGroupId: !GetAtt ECSSecurityGroup.GroupId
       FromPort: 0
       GroupId: !Ref ALBSecurityGroupId
