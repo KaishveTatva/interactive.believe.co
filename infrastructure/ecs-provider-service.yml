@@ -18,6 +18,10 @@ Parameters:
   ClusterName:
     Description: Cluster Name
     Type: String
+  Region:
+    Description: Region name
+    Type: String
+    Default: 'us-east-1'
   ComposerSecurityGroupId:
     Description: Composer Security Group Id
     Type: String

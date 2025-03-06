@@ -142,28 +142,6 @@ Resources:
           ]
       TemplateURL: ./load-balancer.yml
       TimeoutInMinutes: 15
-
-  VpcOrigin:
-    Type: AWS::CloudFormation::Stack
-    DependsOn: LoadBalancer
-    Properties:
-      Parameters:
-        ResourcePrefix: !Ref ResourcePrefix
-        EnvironmentName: !Ref EnvironmentName
-      TemplateURL: ./vpc-origin.yml 
-      TimeoutInMinutes: 30
-
-  CloudfrontBackend:
-    Type: AWS::CloudFormation::Stack
-    DependsOn: VpcOrigin
-    Properties:
-      Parameters:
-        ResourcePrefix: !Ref ResourcePrefix
-        EnvironmentName: !Ref EnvironmentName
-        ALBEndpoint: !GetAtt LoadBalancer.Outputs.ALBEndpoint
-        VpcOriginId: !GetAtt VpcOrigin.Outputs.VpcOriginId
-      TemplateURL: ./cloudfront-backend.yml
-      TimeoutInMinutes: 30
   
   ComposerECRRepository:
     Type: 'AWS::CloudFormation::Stack'
@@ -223,3 +201,25 @@ Resources:
         ECRRepoName: !GetAtt ProviderECRRepository.Outputs.RepositoryName
         ComposerSecurityGroupId: !GetAtt ComposerEcsServiceStack.Outputs.ComposerSecurityGroupId
         ClusterName: !Ref InteractiveClusterName
+
+  VpcOrigin:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: LoadBalancer
+    Properties:
+      Parameters:
+        ResourcePrefix: !Ref ResourcePrefix
+        EnvironmentName: !Ref EnvironmentName
+      TemplateURL: ./vpc-origin.yml 
+      TimeoutInMinutes: 30
+
+  CloudfrontBackend:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VpcOrigin
+    Properties:
+      Parameters:
+        ResourcePrefix: !Ref ResourcePrefix
+        EnvironmentName: !Ref EnvironmentName
+        ALBEndpoint: !GetAtt LoadBalancer.Outputs.ALBEndpoint
+        VpcOriginId: !GetAtt VpcOrigin.Outputs.VpcOriginId
+      TemplateURL: ./cloudfront-backend.yml
+      TimeoutInMinutes: 30
