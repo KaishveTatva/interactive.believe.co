@@ -13,20 +13,7 @@ Parameters:
     Description: Environment name that will be used for resource names
     Type: String
     AllowedPattern: "[a-z]+"
-  CidrPrefix:
-    Description: IPv4 CIDR block prefix (e.g. 10.10, 172.16 etc...)
-    Type: String
-    Default: 172.16
-  ComposerName:
-    Type: String
-  ProviderName:
-    Type: String
-  InteractiveClusterName:
-    Type: String
-
-
 Resources:
-
   CloudFormationPackageS3Bucket:
     Type: "AWS::S3::Bucket"
     Properties:
@@ -65,7 +52,15 @@ Resources:
                 Resource: "*"
       RoleName: !Sub "${ResourcePrefix}-${EnvironmentName}-code-build-role"
 
+  LogsInfrastructureCodeBuild:
+    DependsOn: CodeBuildRole
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      RetentionInDays: 365
+      LogGroupName: !Sub "code-build-${ResourcePrefix}-${EnvironmentName}-infrastructure"
+
   InfrastructureCodeBuild:
+    DependsOn: LogsInfrastructureCodeBuild
     Type: "AWS::CodeBuild::Project"
     Properties:
       Description: Infrastructure CloudFormation Build & Packaging
@@ -74,7 +69,6 @@ Resources:
         Location: !Sub https://github.com/KaishveTatva/interactive.believe.co.git
         ReportBuildStatus: true
         Type: GITHUB
-
       Name: !Sub ${ResourcePrefix}-${EnvironmentName}-infrastructure
       Artifacts:
         Type: NO_ARTIFACTS
@@ -98,23 +92,4 @@ Resources:
           - Name: S3_Bucket
             Type: PLAINTEXT
             Value: !Ref CloudFormationPackageS3Bucket
-          - Name: CidrPrefix
-            Type: PLAINTEXT
-            Value: !Ref CidrPrefix
-          - Name: ComposerName
-            Type: PLAINTEXT
-            Value: !Ref ComposerName
-          - Name: ProviderName
-            Type: PLAINTEXT
-            Value: !Ref ProviderName
-          - Name: InteractiveClusterName
-            Type: PLAINTEXT
-            Value: !Ref InteractiveClusterName
-          
       TimeoutInMinutes: 15
-
-  LogsInfrastructureCodeBuild:
-    Type: "AWS::Logs::LogGroup"
-    Properties:
-      RetentionInDays: 365
-      LogGroupName: !Sub "code-build-${ResourcePrefix}-${EnvironmentName}-infrastructure"

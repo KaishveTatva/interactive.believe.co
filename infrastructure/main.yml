@@ -17,8 +17,10 @@ Parameters:
     Default: 172.16
   ComposerName:
     Type: String
+    Default: 'container-cs'
   ProviderName:
     Type: String
+    Default: 'container-pd'
   InteractiveClusterName:
     Type: String
     Default: 'InteractiveCluster'
@@ -112,7 +114,13 @@ Resources:
           ]
       TemplateURL: ./vpc-endpoints.yml
       TimeoutInMinutes: 15
-   
+
+  DynamoDBTable:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./dynamodb.yml
+      TimeoutInMinutes: 15
+
   TargetGroup:
     Type: AWS::CloudFormation::Stack
     Properties:

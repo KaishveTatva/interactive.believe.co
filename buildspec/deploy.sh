@@ -16,8 +16,4 @@ aws cloudformation deploy \
     --parameter-overrides \
         EnvironmentName=${EnvironmentName} \
         ResourcePrefix=${ResourcePrefix} \
-        CidrPrefix=${CidrPrefix} \
-        ComposerName=${ComposerName} \
-        ProviderName=${ProviderName} \
-        InteractiveClusterName=${InteractiveClusterName} \
     --no-fail-on-empty-changeset
