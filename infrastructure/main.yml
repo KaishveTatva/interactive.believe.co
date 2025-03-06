@@ -21,7 +21,7 @@ Parameters:
     Type: String
   InteractiveClusterName:
     Type: String
-
+    Default: 'InteractiveCluster'
 
 
 Resources:
@@ -222,4 +222,4 @@ Resources:
         ContainerName: !Ref ProviderName
         ECRRepoName: !GetAtt ProviderECRRepository.Outputs.RepositoryName
         ComposerSecurityGroupId: !GetAtt ComposerEcsServiceStack.Outputs.ComposerSecurityGroupId
-  
+        ClusterName: !Ref InteractiveClusterName

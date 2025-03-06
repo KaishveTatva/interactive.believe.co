@@ -12,8 +12,6 @@ Parameters:
     Type: String
   ECRRepoName:
     Type: String
-  Region:
-    Type: String
   VpcId:
     Description: Vpc Id
     Type: AWS::EC2::VPC::Id
