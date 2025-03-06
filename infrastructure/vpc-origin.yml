@@ -19,6 +19,7 @@ Resources:
       VpcOriginEndpointConfig: 
           Arn: !Sub "{{resolve:ssm:/${ResourcePrefix}/${EnvironmentName}-lb/arn}}"          
           HTTPPort: 80
+          OriginProtocolPolicy: "http-only"
           Name: !Sub ${ResourcePrefix}-${EnvironmentName}-vo
 
   SSMForVpcOriginName:

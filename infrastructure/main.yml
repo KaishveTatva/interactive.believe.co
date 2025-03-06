@@ -25,28 +25,28 @@ Parameters:
 
 
 Resources:
-  StaticContentBucket:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      Parameters:
-        EnvironmentName: !Ref EnvironmentName
-        BucketName: 'web-static-content'
-        ResourcePrefix: !Ref ResourcePrefix
-      TemplateURL: ./s3.yml
-      TimeoutInMinutes: 15
+  # StaticContentBucket:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     Parameters:
+  #       EnvironmentName: !Ref EnvironmentName
+  #       BucketName: 'web-static-content'
+  #       ResourcePrefix: !Ref ResourcePrefix
+  #     TemplateURL: ./s3.yml
+  #     TimeoutInMinutes: 15
 
-  StaticContentCloudFront:
-    DependsOn: StaticContentBucket
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      Parameters:
-        EnvironmentName: !Ref EnvironmentName
-        ResourcePrefix: !Ref ResourcePrefix
-        BucketName: !GetAtt StaticContentBucket.Outputs.BucketName
-        BucketArn: !GetAtt StaticContentBucket.Outputs.BucketArn
-        DomainName: !Sub ${StaticContentBucket.Outputs.BucketName}.s3.amazonaws.com
-      TemplateURL: ./cloudfront.yml
-      TimeoutInMinutes: 60
+  # StaticContentCloudFront:
+  #   DependsOn: StaticContentBucket
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     Parameters:
+  #       EnvironmentName: !Ref EnvironmentName
+  #       ResourcePrefix: !Ref ResourcePrefix
+  #       BucketName: !GetAtt StaticContentBucket.Outputs.BucketName
+  #       BucketArn: !GetAtt StaticContentBucket.Outputs.BucketArn
+  #       DomainName: !Sub ${StaticContentBucket.Outputs.BucketName}.s3.amazonaws.com
+  #     TemplateURL: ./cloudfront.yml
+  #     TimeoutInMinutes: 60
 
   VPC:
     Type: AWS::CloudFormation::Stack
