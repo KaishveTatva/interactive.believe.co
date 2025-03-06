@@ -186,6 +186,7 @@ Resources:
         ContainerName: !Ref ComposerName
         ECRRepoName: !GetAtt ComposerECRRepository.Outputs.RepositoryName
         ALBSecurityGroupId: !GetAtt LoadBalancer.Outputs.ALBSecurityGroupId
+        ClusterName: !Ref InteractiveClusterName
 
   ProviderEcsServiceStack:
     Type: AWS::CloudFormation::Stack
@@ -204,7 +205,7 @@ Resources:
 
   VpcOrigin:
     Type: AWS::CloudFormation::Stack
-    DependsOn: LoadBalancer
+    DependsOn: InteractiveCluster
     Properties:
       Parameters:
         ResourcePrefix: !Ref ResourcePrefix
