@@ -20,6 +20,9 @@ Parameters:
   ClusterName:
     Description: Cluster Name
     Type: String
+  ComposerSecurityGroupId:
+    Description: Composer Security Group Id
+    Type: String
 
 Resources:
   TaskDefinition:
@@ -57,9 +60,18 @@ Resources:
       VpcId: !Sub '{{resolve:ssm:/${ResourcePrefix}/${EnvironmentName}/vpc-id}}'
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: '0'
-          ToPort: '65535'
+          FromPort: 0
+          ToPort: 65535
           CidrIp: '0.0.0.0/0'
+        - IpProtocol: "-1"
+          FromPort: 0
+          ToPort: 65535
+          SourceSecurityGroupId: !Ref ComposerSecurityGroupId          
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
           Value: !Sub ${ResourcePrefix}-${EnvironmentName}-${ContainerName}-sg

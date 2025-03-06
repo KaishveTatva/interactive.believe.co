@@ -17,6 +17,9 @@ Parameters:
   ClusterName:
     Description: Cluster Name
     Type: String
+  ALBSecurityGroupId:
+    Description: ALB Security Group Id
+    Type: String
 
 Resources:
   TaskDefinition:
@@ -54,13 +57,17 @@ Resources:
       VpcId: !Sub '{{resolve:ssm:/${ResourcePrefix}/${EnvironmentName}/vpc-id}}'
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: '0'
-          ToPort: '65535'
+          FromPort: 0
+          ToPort: 65535
           CidrIp: '0.0.0.0/0'
+        - IpProtocol: "-1"
+          FromPort: 0
+          ToPort: 65535
+          SourceSecurityGroupId: !Ref ALBSecurityGroupId        
       SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
+        - IpProtocol: "-1"
+          FromPort: 0
+          ToPort: 65535
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
@@ -112,82 +119,18 @@ Resources:
                   - cloudwatch:DescribeAlarms
                   - cloudwatch:PutMetricAlarm
                 Resource: '*'
+  
+  AddSGOutboundToALB:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      Description: add outbound to ALB's SG
+      DestinationSecurityGroupId: !GetAtt ECSSecurityGroup.GroupId
+      FromPort: 0
+      GroupId: !Ref ALBSecurityGroupId
+      IpProtocol: "-1"
+      ToPort: 65535
 
-  # AutoScalingTarget:
-  #   Type: AWS::ApplicationAutoScaling::ScalableTarget
-  #   Properties:
-  #     MinCapacity: 1
-  #     MaxCapacity: 10
-  #     ResourceId: !Join
-  #       - '/'
-  #       - - service
-  #         - !Sub '{{resolve:ssm:/${ResourcePrefix}/${EnvironmentName}/${ContainerName}/name}}'
-  #         - !GetAtt ECSService.Name
-  #     ScalableDimension: ecs:service:DesiredCount
-  #     ServiceNamespace: ecs
-  #     RoleARN: !GetAtt AutoScalingRole.Arn
-
-  # ScaleUpPolicy:
-  #   Type: AWS::ApplicationAutoScaling::ScalingPolicy
-  #   Properties:
-  #     PolicyName: !Sub ${ResourcePrefix}-${EnvironmentName}-${ContainerName}-scaleup-policy
-  #     PolicyType: StepScaling
-  #     ScalingTargetId: !Ref AutoScalingTarget
-  #     StepScalingPolicyConfiguration:
-  #       AdjustmentType: PercentChangeInCapacity
-  #       Cooldown: 60
-  #       MetricAggregationType: Average
-  #       StepAdjustments:
-  #       - MetricIntervalLowerBound: 50
-  #         MetricIntervalUpperBound: 60
-  #         ScalingAdjustment: 1
-  #       - MetricIntervalLowerBound: 60
-  #         MetricIntervalUpperBound: 70
-  #         ScalingAdjustment: 1
-  #       - MetricIntervalLowerBound: 70
-  #         MetricIntervalUpperBound: 80
-  #         ScalingAdjustment: 1
-  #       - MetricIntervalLowerBound: 80
-  #         MetricIntervalUpperBound: 90
-  #         ScalingAdjustment: 1
-  #       - MetricIntervalLowerBound: 90
-  #         ScalingAdjustment: 1
-
-  # ScaleDownPolicy:
-  #   Type: AWS::ApplicationAutoScaling::ScalingPolicy
-  #   Properties:
-  #     PolicyName: !Sub ${ResourcePrefix}-${EnvironmentName}-${ContainerName}-scaledown-policy
-  #     PolicyType: StepScaling
-  #     ScalingTargetId: !Ref AutoScalingTarget
-  #     StepScalingPolicyConfiguration:
-  #       AdjustmentType: ChangeInCapacity
-  #       Cooldown: 60
-  #       MetricAggregationType: Average
-  #       StepAdjustments:
-  #         - MetricIntervalUpperBound: 0
-  #           ScalingAdjustment: -1
-
-  # AlarmHighRequests:
-    # Type: AWS::CloudWatch::Alarm
-    # Properties:
-    #   ActionsEnabled: TRUE
-    #   AlarmActions:
-    #     - !Ref ScaleUpPolicy
-    #   ComparisonOperator: GreaterThanThreshold
-    #   AlarmName: !Sub ${ResourcePrefix}-${EnvironmentName}-${ContainerName}-alarm
-    #   DatapointsToAlarm: 2
-    #   Dimensions:
-    #     - Name: "ClusterName"
-    #       Value: !Sub '{{resolve:ssm:/${ResourcePrefix}/${EnvironmentName}/${ContainerName}/name}}'
-    #     - Name: "ServerName"
-    #       Value: !GetAtt ECSService.Name
-    #   EvaluationPeriods: 3
-    #   MetricName: CPUUtilization
-    #   Namespace: AWS/ECS
-    #   OKActions:
-    #     - !Ref ScaleDownPolicy
-    #   Period: 300
-    #   Statistic: Average
-    #   TreatMissingData: ignore
-    #   Threshold: 70
-    #   Unit: Percent
+Outputs:
+  ComposerSecurityGroupId:
+    Description: "The ID of the Ecs Composer SG"
+    Value: !GetAtt ECSSecurityGroup.GroupId

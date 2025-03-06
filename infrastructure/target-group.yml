@@ -20,8 +20,8 @@ Resources:
       IpAddressType: ipv4
       Name: !Sub ${ResourcePrefix}-${EnvironmentName}-tg
       Protocol: HTTP
-      # HealthCheckMatcher:
-      #   HttpCode: "200-499"
+      Matcher:
+        HttpCode: "200-499" 
       Port: 8000
       TargetType: ip
       TargetGroupAttributes:

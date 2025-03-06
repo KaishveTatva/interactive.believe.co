@@ -207,7 +207,8 @@ Resources:
         ResourcePrefix: !Ref ResourcePrefix
         ContainerName: !Ref ComposerName
         ECRRepoName: !GetAtt ComposerECRRepository.Outputs.RepositoryName
-  
+        ALBSecurityGroupId: !GetAtt LoadBalancer.Outputs.ALBSecurityGroupId
+
   ProviderEcsServiceStack:
     Type: AWS::CloudFormation::Stack
     DependsOn: InteractiveCluster
@@ -220,5 +221,5 @@ Resources:
         ResourcePrefix: !Ref ResourcePrefix
         ContainerName: !Ref ProviderName
         ECRRepoName: !GetAtt ProviderECRRepository.Outputs.RepositoryName
-
+        ComposerSecurityGroupId: !GetAtt ComposerEcsServiceStack.Outputs.ComposerSecurityGroupId
   

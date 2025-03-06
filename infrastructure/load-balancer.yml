@@ -73,4 +73,7 @@ Resources:
 Outputs:
   ALBEndpoint:
     Description: "ALB DNS Name"
-    Value: !GetAtt InternalALB.DNSName         
+    Value: !GetAtt InternalALB.DNSName
+  ALBSecurityGroupId:
+    Description: "The ID of the ALB Security Group"
+    Value: !GetAtt InternalALBSecurityGroup.GroupId           
