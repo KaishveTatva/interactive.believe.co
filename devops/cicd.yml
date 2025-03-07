@@ -93,3 +93,23 @@ Resources:
             Type: PLAINTEXT
             Value: !Ref CloudFormationPackageS3Bucket
       TimeoutInMinutes: 15
+  
+  ComposerECRRepository:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        ResourcePrefix: !Ref ResourcePrefix
+        EnvironmentName: !Ref EnvironmentName
+        RepositoryName: !Ref ComposerName
+      TemplateURL: ./ecr.yml
+      TimeoutInMinutes: 30
+
+  ProviderECRRepository:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        ResourcePrefix: !Ref ResourcePrefix
+        EnvironmentName: !Ref EnvironmentName
+        RepositoryName: !Ref ProviderName
+      TemplateURL: ./ecr.yml
+      TimeoutInMinutes: 30

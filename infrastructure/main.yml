@@ -150,26 +150,6 @@ Resources:
           ]
       TemplateURL: ./load-balancer.yml
       TimeoutInMinutes: 15
-  
-  ComposerECRRepository:
-    Type: 'AWS::CloudFormation::Stack'
-    Properties:
-      Parameters:
-        ResourcePrefix: !Ref ResourcePrefix
-        EnvironmentName: !Ref EnvironmentName
-        RepositoryName: !Ref ComposerName
-      TemplateURL: ./ecr.yml
-      TimeoutInMinutes: 30
-
-  ProviderECRRepository:
-    Type: 'AWS::CloudFormation::Stack'
-    Properties:
-      Parameters:
-        ResourcePrefix: !Ref ResourcePrefix
-        EnvironmentName: !Ref EnvironmentName
-        RepositoryName: !Ref ProviderName
-      TemplateURL: ./ecr.yml
-      TimeoutInMinutes: 30
 
   InteractiveCluster:
     Type: 'AWS::CloudFormation::Stack'
@@ -192,7 +172,7 @@ Resources:
         EnvironmentName: !Ref EnvironmentName
         ResourcePrefix: !Ref ResourcePrefix
         ContainerName: !Ref ComposerName
-        ECRRepoName: !GetAtt ComposerECRRepository.Outputs.RepositoryName
+        ECRRepoName: !Sub ${ResourcePrefix}-${EnvironmentName}-${ComposerName}
         ALBSecurityGroupId: !GetAtt LoadBalancer.Outputs.ALBSecurityGroupId
         ClusterName: !Ref InteractiveClusterName
 
@@ -207,7 +187,7 @@ Resources:
         VpcId: !GetAtt VPC.Outputs.VpcId
         ResourcePrefix: !Ref ResourcePrefix
         ContainerName: !Ref ProviderName
-        ECRRepoName: !GetAtt ProviderECRRepository.Outputs.RepositoryName
+        ECRRepoName: !Sub ${ResourcePrefix}-${EnvironmentName}-${ProviderName}
         ComposerSecurityGroupId: !GetAtt ComposerEcsServiceStack.Outputs.ComposerSecurityGroupId
         ClusterName: !Ref InteractiveClusterName
 
